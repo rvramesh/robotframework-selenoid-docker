@@ -1,0 +1,53 @@
+version: '3'
+name: robotframework-docker-compose
+services:
+  selenoid:
+    image: aerokube/selenoid
+    container_name: "selenoid"
+    network_mode: bridge
+    volumes:
+      - "$PWD:/etc/selenoid"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "$PWD/selenoid/video:/opt/selenoid/video"
+      - "$PWD/selenoid/logs:/opt/selenoid/logs"
+    environment:
+      - OVERRIDE_VIDEO_OUTPUT_DIR=$PWD/selenoid/video
+    command: ["-conf", "/etc/selenoid/browsers.json", "-video-output-dir", "/opt/selenoid/video", "-log-output-dir", "/opt/selenoid/logs"]
+    ports:
+      - "4444:4444"
+  selenoid-ui:
+    network_mode: bridge
+    image: aerokube/selenoid-ui
+    container_name: "selenoid-ui"
+    links:
+      - selenoid
+    ports:
+      - "8080:8080"
+    command: ["--selenoid-uri","http://selenoid:4444"]
+  test-gc:
+    network_mode: bridge
+    links:
+      - selenoid
+    build: .
+    command: bash -c "sleep 10 && robot --variable BROWSER:chrome --outputdir /out /tests"
+    volumes:
+      - ./test:/tests:ro
+      - ./results/gc:/out:rw
+  test-ff:
+    network_mode: bridge
+    links:
+      - selenoid
+    build: .
+    command: bash -c "sleep 10 && robot --variable BROWSER:firefox --outputdir /out /tests"
+    volumes:
+      - ./test:/tests:ro
+      - ./results/ff:/out:rw
+  test-opera:
+    network_mode: bridge
+    links:
+      - selenoid
+    build: .
+    command: bash -c "sleep 10 && robot --variable BROWSER:opera --outputdir /out /tests"
+    volumes:
+      - ./test:/tests:ro
+      - ./results/op:/out:rw
