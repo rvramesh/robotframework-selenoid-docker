@@ -29,25 +29,16 @@ services:
     links:
       - selenoid
     build: .
-    command: bash -c "sleep 10 && robot --variable BROWSER:chrome --outputdir /out /tests"
+    command: bash -c "sleep 10 && robot --variable BROWSER:chrome --variable SELENOID_SERVER:http:////selenoid:4444/wd/hub --outputdir /out /tests"
     volumes:
-      - ./test:/tests:ro
+      - ./tests:/tests:ro
       - ./results/gc:/out:rw
   test-ff:
     network_mode: bridge
     links:
       - selenoid
     build: .
-    command: bash -c "sleep 10 && robot --variable BROWSER:firefox --outputdir /out /tests"
+    command: bash -c "sleep 10 && robot --variable BROWSER:firefox --variable SELENOID_SERVER:http://selenoid:4444/wd/hub --outputdir /out /tests"
     volumes:
-      - ./test:/tests:ro
+      - ./tests:/tests:ro
       - ./results/ff:/out:rw
-  test-opera:
-    network_mode: bridge
-    links:
-      - selenoid
-    build: .
-    command: bash -c "sleep 10 && robot --variable BROWSER:opera --outputdir /out /tests"
-    volumes:
-      - ./test:/tests:ro
-      - ./results/op:/out:rw

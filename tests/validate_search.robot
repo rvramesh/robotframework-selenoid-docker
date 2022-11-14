@@ -11,14 +11,14 @@ ${BROWSER}        Firefox
 ${DELAY}          1
 ${URL}      https://google.co.in/
 ${SELENOID_SERVER}    http://selenoid:4444/wd/hub
-&{DESIRED_CAPABILITIES}    name=browserTest    enableVideo=${True}    enableVNC=${True}
+&{DESIRED_CAPABILITIES}    name=browserTest,enableVideo=${True},enableVNC=${True}
 
 *** Keywords ***
 Open Browser To Search Page
     Open Browser    ${URL}    ${BROWSER}    None    remote_url=${SELENOID_SERVER}   desired_capabilities=${DESIRED_CAPABILITIES}
     Maximize Browser Window
     Set Selenium Speed    ${DELAY}
-    Sleep    300
+    Sleep    3
     Search Page Should Be Open
 
 Search Page Should Be Open
